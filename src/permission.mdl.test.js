@@ -164,7 +164,7 @@ describe('Module: Permission', function () {
     });
   });
 
-  xdescribe('On $stateChangeStart', function () {
+  describe('On $stateChangeStart', function () {
     it('should go to an accepted state', inject (function($rootScope) {
       initStateTo('home');
       $state.go('accepted');

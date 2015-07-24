@@ -62,9 +62,6 @@
 
               }
               else if(angular.isObject(redirectTo)){
-                console.log(role);
-                console.log(redirectTo);
-                console.log(redirectTo[role]);
                 $state.go(redirectTo[role], toParams);
               }
               else {
