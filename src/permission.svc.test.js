@@ -1,4 +1,4 @@
-describe('Service: Permission', function () {
+xdescribe('Service: Permission', function () {
   'use strict';
 
   var Permission;

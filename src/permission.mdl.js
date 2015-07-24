@@ -33,7 +33,7 @@
             return;
           }
 
-          Permission.authorize(permissions, toParams).then(function () {
+          Permission.authorize(permissions, toParams).then(function (role) {
             // If authorized, use call state.go without triggering the event.
             // Then trigger $stateChangeSuccess manually to resume the rest of the process
             // Note: This is a pseudo-hacky fix which should be fixed in future ui-router versions
@@ -45,12 +45,11 @@
                   .$broadcast('$stateChangeSuccess', toState, toParams, fromState, fromParams);
               });
             }
-          }, function () {
+          }, function (role) {
             if (!$rootScope.$broadcast('$stateChangeStart', toState, toParams, fromState, fromParams).defaultPrevented) {
               $rootScope.$broadcast('$stateChangePermissionDenied', toState, toParams);
 
               var redirectTo = permissions.redirectTo;
-              var result;
 
               if (angular.isFunction(redirectTo)) {
                 redirectTo = redirectTo();
@@ -61,7 +60,14 @@
                   }
                 });
 
-              } else {
+              }
+              else if(angular.isObject(redirectTo)){
+                console.log(role);
+                console.log(redirectTo);
+                console.log(redirectTo[role]);
+                $state.go(redirectTo[role], toParams);
+              }
+              else {
                 if (redirectTo) {
                   $state.go(redirectTo, toParams);
                 }

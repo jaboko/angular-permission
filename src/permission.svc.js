@@ -48,9 +48,9 @@
 
             var deferred = $q.defer();
             if (value) {
-              deferred.resolve();
+              deferred.resolve(value);
             } else {
-              deferred.reject();
+              deferred.reject(value);
             }
             return deferred.promise;
           },
@@ -90,12 +90,12 @@
             validatingRole = Permission._promiseify(validatingRole);
 
             validatingRole.then(function () {
-              deferred.resolve();
+              deferred.resolve(currentRole);
             }, function () {
               Permission._findMatchingRole(roles, toParams).then(function () {
-                deferred.resolve();
+                deferred.resolve(currentRole);
               }, function () {
-                deferred.reject();
+                deferred.reject(currentRole);
               });
             });
 
@@ -124,23 +124,23 @@
           resolveIfMatch: function (rolesArray, toParams) {
             var roles = angular.copy(rolesArray);
             var deferred = $q.defer();
-            Permission._findMatchingRole(roles, toParams).then(function () {
+            Permission._findMatchingRole(roles, toParams).then(function (role) {
               // Found role match
-              deferred.resolve();
-            }, function () {
+              deferred.resolve(role);
+            }, function (role) {
               // No match
-              deferred.reject();
+              deferred.reject(role);
             });
             return deferred.promise;
           },
           rejectIfMatch: function (roles, toParams) {
             var deferred = $q.defer();
-            Permission._findMatchingRole(roles, toParams).then(function () {
+            Permission._findMatchingRole(roles, toParams).then(function (role) {
               // Role found
-              deferred.reject();
-            }, function () {
+              deferred.reject(role);
+            }, function (role) {
               // Role not found
-              deferred.resolve();
+              deferred.resolve(role);
             });
             return deferred.promise;
           },

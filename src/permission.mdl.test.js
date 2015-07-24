@@ -142,12 +142,29 @@ describe('Module: Permission', function () {
       }
     });
 
+    $stateProvider.state('objectRedirect', {
+      url: '/object',
+      data: {
+        permissions: {
+          except: ['denied', 'accepted'],
+          redirectTo: {
+            denied: 'otherObject',
+            accepted: 'accepted'
+          }
+        }
+      }
+    });
+
     $stateProvider.state('other', {
       url: '/other'
-    })
+    });
+
+    $stateProvider.state('otherObject', {
+      url: '/otherObject'
+    });
   });
 
-  describe('On $stateChangeStart', function () {
+  xdescribe('On $stateChangeStart', function () {
     it('should go to an accepted state', inject (function($rootScope) {
       initStateTo('home');
       $state.go('accepted');
@@ -419,6 +436,17 @@ describe('Module: Permission', function () {
       $state.go('functionPromiseRedirect');
       $rootScope.$digest();
       expect($state.current.name).toBe('other');
+    });
+  });
+
+  describe('#redirectTo object', function(){
+    it('should redirect to the correct state', function() {
+      initStateTo('home');
+
+      $state.go('objectRedirect');
+
+      $rootScope.$digest();
+      expect($state.current.name).toBe('otherObject');
     });
   });
 
