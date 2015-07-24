@@ -71,12 +71,14 @@
               }
             }
           },
+          // NOTE questa funzione è ricorsiva
+          // FIXME a mio parare questa funzione incasina le cose
           _findMatchingRole: function (rolesArray, toParams) {
             var roles = angular.copy(rolesArray);
             var deferred = $q.defer();
             var currentRole = roles.shift();
 
-            
+            console.log('============== roles: ', roles);
 
             // If no roles left to validate reject promise
             if (!currentRole) {
