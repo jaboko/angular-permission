@@ -4,8 +4,8 @@
   angular.module('permission', ['ui.router'])
     .run(['$rootScope', 'Permission', '$state', '$q',
     function ($rootScope, Permission, $state, $q) {
-      $rootScope.$on('$stateChangeStart',
-      function (event, toState, toParams, fromState, fromParams) {
+      $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+
         if (toState.$$finishAuthorize) {
           return;
         }
@@ -24,7 +24,7 @@
             ' version 1');
           permissions = toState.permissions;
         }
-
+        // console.log('chageStart', toState.name, fromState.name, permissions);
         if (permissions) {
           event.preventDefault();
           toState = angular.extend({'$$finishAuthorize': true}, toState);
@@ -33,7 +33,8 @@
             return;
           }
 
-          Permission.authorize(permissions, toParams).then(function (role) {
+          Permission.authorize(permissions, toParams)
+          .then(function () {
             // If authorized, use call state.go without triggering the event.
             // Then trigger $stateChangeSuccess manually to resume the rest of the process
             // Note: This is a pseudo-hacky fix which should be fixed in future ui-router versions
@@ -45,7 +46,9 @@
                   .$broadcast('$stateChangeSuccess', toState, toParams, fromState, fromParams);
               });
             }
-          }, function (role) {
+          })
+          .catch(function (role) {
+            console.log('-------------------------------------------------- catched unauthorize: ' + role + '--------------------------------------------------');
             if (!$rootScope.$broadcast('$stateChangeStart', toState, toParams, fromState, fromParams).defaultPrevented) {
               $rootScope.$broadcast('$stateChangePermissionDenied', toState, toParams);
 
@@ -62,6 +65,7 @@
 
               }
               else if(angular.isObject(redirectTo)){
+                console.log('redirect TO object: ' + redirectTo[role]);
                 $state.go(redirectTo[role], toParams);
               }
               else {

@@ -49,7 +49,18 @@ describe('Module: Permission', function () {
         return params.isset === 'true';
       }
       else {
+        console.log('is withParams: ' + (params.isset === true));
         return params.isset === true;
+      }
+    });
+
+    PermissionProvider.defineRole('withOtherParams', function(params) {
+      if(params.isOther && angular.isString(params.isOther)) {
+        return params.isOther === 'true';
+      }
+      else {
+        console.log('is withOtherParams: ' + (params.isOther === true));
+        return params.isOther === true;
       }
     });
 
@@ -143,13 +154,13 @@ describe('Module: Permission', function () {
     });
 
     $stateProvider.state('objectRedirect', {
-      url: '/object',
+      url: '/object/:isset',
       data: {
         permissions: {
-          except: ['denied', 'accepted'],
+          except: ['withOtherParams', 'withParams'],
           redirectTo: {
-            denied: 'otherObject',
-            accepted: 'accepted'
+            withOtherParams: 'otherObject',
+            withParams: 'other'
           }
         }
       }
@@ -441,12 +452,12 @@ describe('Module: Permission', function () {
 
   describe('#redirectTo object', function(){
     it('should redirect to the correct state', function() {
-      initStateTo('home');
+      // initStateTo('home');
 
-      $state.go('objectRedirect');
+      $state.go('objectRedirect', {isset: true, isOther: false});
 
       $rootScope.$digest();
-      expect($state.current.name).toBe('otherObject');
+      expect($state.current.name).toBe('other');
     });
   });
 

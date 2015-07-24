@@ -76,6 +76,8 @@
             var deferred = $q.defer();
             var currentRole = roles.shift();
 
+            
+
             // If no roles left to validate reject promise
             if (!currentRole) {
               deferred.reject();
@@ -87,16 +89,29 @@
             }
 
             var validatingRole = Permission.roleValidations[currentRole](toParams, currentRole);
+
+            // console.log(Permission.roleValidations[currentRole], toParams, currentRole);
+            console.log('_findMatchingRole: ' + validatingRole, ' for ' + currentRole);
             validatingRole = Permission._promiseify(validatingRole);
 
-            validatingRole.then(function () {
-              deferred.resolve(currentRole);
-            }, function () {
-              Permission._findMatchingRole(roles, toParams).then(function () {
-                deferred.resolve(currentRole);
-              }, function () {
-                deferred.reject(currentRole);
-              });
+            validatingRole
+            .then(function (role) {
+              // NOTE role ha valore boolean, devo ritornare il ruolo corrente
+              console.log('currentRole: ' + currentRole);
+              return deferred.resolve(currentRole);
+            })
+            .catch(function (role) {
+              console.log('entro nel catch');
+              return Permission._findMatchingRole(roles, toParams);
+            })
+            .then(function (role) {
+              // NOTE qua rimane incastra il ruolo sbagliato
+              console.log('2nd current: ' + currentRole);
+              return deferred.resolve(role);
+            })
+            .catch(function (role) {
+              console.log(currentRole);
+              return deferred.reject(role);
             });
 
             return deferred.promise;
@@ -135,11 +150,16 @@
           },
           rejectIfMatch: function (roles, toParams) {
             var deferred = $q.defer();
-            Permission._findMatchingRole(roles, toParams).then(function (role) {
+            console.log('rejectIfMatch: ' + roles);
+            Permission._findMatchingRole(roles, toParams)
+            .then(function (role) {
               // Role found
+              // NOTE reject con il ruolo errato
+              console.log('reject', role);
               deferred.reject(role);
             }, function (role) {
               // Role not found
+              console.log('resolve');
               deferred.resolve(role);
             });
             return deferred.promise;
