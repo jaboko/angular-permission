@@ -7,6 +7,8 @@
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
 
+'use strict';
+
 (function () {
     'use strict';
 
@@ -91,6 +93,8 @@
                 });
             }]);
 }());
+
+'use strict';
 
 (function () {
     'use strict';
